@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, CanActivate } from '@angular/router';
+import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
 import { Meteor } from 'meteor/meteor';
 import { MeteorObservable } from 'meteor-rxjs';
@@ -8,6 +9,8 @@ import 'rxjs/add/operator/map';
 
 import { Parties } from '../../../../both/collections/parties.collection';
 import { Party } from '../../../../both/models/party.model';
+import { Users } from '../../../../both/collections/users.collection';
+import { User } from '../../../../both/models/user.model';
 
 import template from './parties-details.component.html';
 
@@ -20,6 +23,8 @@ export class PartyDetailsComponent implements OnInit, OnDestroy, CanActivate{
     paramsSub: Subscription;
     party: Party;
     partySub: Subscription;
+    users: Observable<User>;
+    uninvitedSub: Subscription;
 
     constructor(private route:ActivatedRoute){
 
@@ -39,9 +44,31 @@ export class PartyDetailsComponent implements OnInit, OnDestroy, CanActivate{
                     this.partySub.unsubscribe();
                 }
                 this.partySub = MeteorObservable.subscribe('party', this.partyId).subscribe(() => {
-                    this.party = Parties.findOne(this.partyId);
+                    MeteorObservable.autorun().subscribe(()=>{
+                        this.party = Parties.findOne(this.partyId);
+                        this.getUsers(this.party);
+                    });                    
+                });
+
+                if(this.uninvitedSub){
+                    this.uninvitedSub.unsubscribe();
+                }
+
+                this.uninvitedSub = MeteorObservable.subscribe('uninvited', this.partyId).subscribe(()=>{
+                    this.getUsers(this.party);
                 });
             });
+    }
+
+    getUsers(party: Party){
+        if(party){
+            this.users = Users.find({
+                _id: {
+                    $nin: party.invited || [],
+                    $ne: Meteor.userId()
+                }
+            }).zone();
+        }
     }
 
     saveParty(){
@@ -59,8 +86,25 @@ export class PartyDetailsComponent implements OnInit, OnDestroy, CanActivate{
         });
     }
 
+    invite(user: Meteor.User){
+        MeteorObservable.call('invite', this.party._id, user._id).subscribe(()=>{
+            alert('User successfully invited');
+        },(error)=>{
+            alert(`Failed to invite due to ${error}`);
+        });
+    }
+
+    reply(rsvp: string) {
+        MeteorObservable.call('reply', this.party._id, rsvp).subscribe(()=>{
+            alert('You successfully replied');
+        }, (error)=> {
+            alert(`Failed to reply due to ${error}`);
+        });
+    }
+
     ngOnDestroy(){
         this.paramsSub.unsubscribe();
         this.partySub.unsubscribe();
+        this.uninvitedSub.unsubscribe();
     }
 }
