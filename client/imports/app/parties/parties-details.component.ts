@@ -4,6 +4,7 @@ import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
 import { Meteor } from 'meteor/meteor';
 import { MeteorObservable } from 'meteor-rxjs';
+import { InjectUser } from 'angular2-meteor-accounts-ui';
 
 import 'rxjs/add/operator/map';
 
@@ -18,6 +19,7 @@ import template from './parties-details.component.html';
     selector: 'party-details',
     template
 })
+@InjectUser('user')
 export class PartyDetailsComponent implements OnInit, OnDestroy, CanActivate{
     partyId: string;
     paramsSub: Subscription;
@@ -25,6 +27,7 @@ export class PartyDetailsComponent implements OnInit, OnDestroy, CanActivate{
     partySub: Subscription;
     users: Observable<User>;
     uninvitedSub: Subscription;
+    user: Meteor.User;
 
     constructor(private route:ActivatedRoute){
 
@@ -81,7 +84,8 @@ export class PartyDetailsComponent implements OnInit, OnDestroy, CanActivate{
             $set: {
                 name: this.party.name,
                 description: this.party.description,
-                location: this.party.location
+                location: this.party.location,
+                'public': this.party.public
             }
         });
     }
@@ -100,6 +104,22 @@ export class PartyDetailsComponent implements OnInit, OnDestroy, CanActivate{
         }, (error)=> {
             alert(`Failed to reply due to ${error}`);
         });
+    }
+
+    get isOwner(): boolean {
+        return this.party && this.user && this.user._id === this.party.owner;
+    }
+
+    get isPublic(): boolean {
+        return this.party && this.party.public;
+    }
+
+    get isInvited(): boolean {
+        if(this.party && this.user){
+            const invited = this.party.invited || [];
+            return invited.indexOf(this.user._id) !== -1;
+        }
+        return false;
     }
 
     ngOnDestroy(){
