@@ -6,7 +6,7 @@
     <input [disabled]="!isOwner" type="text" [(ngModel)]="party.description" name="description">
     
     <label>Location</label>
-    <input [disabled]="!isOwner" type="text" [(ngModel)]="party.location" name="location">
+    <input [disabled]="!isOwner" type="text" [(ngModel)]="party.location.name" name="location">
 
     <button [disabled]="!isOwner" type="submit">Save</button>
     <a [routerLink]="['/']">Cancel</a>
@@ -28,3 +28,15 @@
     <input type="button" value="Maybe'" (click)="reply('maybe')">
     <input type="button" value="No'" (click)="reply('no')">
 </div>
+
+<sebm-google-map
+    [latitude]="lat || centerLat"
+    [longitude]="lng || centerLng"
+    [zoom]="8"
+    (mapClick)="mapCliked($event)">
+    <sebm-google-map-marker
+        *ngIf="lat && lng"
+        [latitude]="lat"
+        [longitude]="lng">
+    </sebm-google-map-marker>
+</sebm-google-map>

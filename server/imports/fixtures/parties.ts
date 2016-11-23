@@ -7,21 +7,27 @@ export function loadParties(){
             {
                 name: 'Fiesta de carga inicial 1',
                 description: 'Descripcion de carga inicial 1',
-                location: 'ubicacion de carga inicial 1',
+                location: {
+                    name: 'Palo alto'
+                },
                 public: true,
                 rsvps: []
             },
             {
                 name: 'Fiesta de carga inicial 2',
                 description: 'Descripcion de carga inicial 2',
-                location: 'ubicacion de carga inicial 2',
+                location: {
+                    name: 'Palo alto'
+                },
                 public: true,
                 rsvps: []
             },
             {
                 name: 'Fiesta de carga inicial 3',
                 description: 'Descripcion de carga inicial 3',
-                location: 'ubicacion de carga inicial 3',
+                location: {
+                    name: 'Palo alto'
+                },
                 public: false,
                 rsvps: []
             }

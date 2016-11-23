@@ -67,7 +67,7 @@ function buildQuery(partyId?: string): Object {
 
     return {
         $and: [{
-            location: searchRegEx
+            location.name: searchRegEx
         },
         isAvailable]
     };*/
