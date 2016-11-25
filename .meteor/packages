@@ -26,3 +26,6 @@ anti:fake
 tmeasday:publish-counts
 check@1.2.4
 email@1.1.18
+jalik:ufs
+jalik:ufs-gridfs
+edgee:slingshot

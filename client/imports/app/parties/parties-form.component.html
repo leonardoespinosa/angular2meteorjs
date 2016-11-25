@@ -6,7 +6,7 @@
                 <h2>Add it now!</h2>
             </div>
             <div class="form-center">
-                <form [hidden]="!user" [formGroup]="addForm" (ngSubmit)="addParty()">
+                <form [hidden]="!user" [formGroup]="addForm" (ngSubmit)="addParty(); upload.reset();">
                     <div style="display: table-row">
                         <div class="form-inputs">
                             <md-input dividerColor="accent" formControlName="name" placeholder="Party name"></md-input>
@@ -17,6 +17,7 @@
                             <br/>
                             <md-checkbox formControlName="public">Public party?</md-checkbox>
                             <br/><br/>
+                            <parties-upload #upload (onFile)="onImage($event)"></parties-upload>
                             <button color="accent" md-raised-button type="submit">Add my party!</button>
                         </div>
                         <div class="form-extras">
